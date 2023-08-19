@@ -2,26 +2,7 @@ import bpy
 import os
 from bpy.types import Panel
 
-
-def panel_draw(self, context):
-        layout = self.layout
-        scene = context.scene
-        box = layout.box()
-        row = box.row()
-        row.label(text="File Importer")
-        row = box.row()
-        row.operator("xnd.pipeline_importfbx", text="Import FBX")
-        row = box.row()
-        row.operator("xnd.reimport_file", text="Reimport File")
-        
-
-
-# ImportHelper is a helper class, defines filename and
-# invoke() function which calls the file selector.
-from bpy_extras.io_utils import ImportHelper
-from bpy.props import StringProperty, BoolProperty, EnumProperty,FloatProperty
-from bpy.types import Operator
-
+# 隶属于pipeline_tools下的模块
 '''
  ▄▄▄▄▄▄▄▄▄▄▄       ▄         ▄       ▄▄▄▄▄▄▄▄▄▄▄ 
 ▐░░░░░░░░░░░▌     ▐░▌       ▐░▌     ▐░░░░░░░░░░░▌
@@ -36,6 +17,55 @@ from bpy.types import Operator
  ▀▀▀▀▀▀▀▀▀▀▀       ▀▀▀▀▀▀▀▀▀▀▀       ▀▀▀▀▀▀▀▀▀▀▀ 
                                                  
 
+'''
+
+def panel_draw(self, context):
+        layout = self.layout
+        scene = context.scene
+        box = layout.box()
+        row = box.row()
+        row.label(text="File Importer")
+        row = box.row()
+        row.operator("xnd.pipeline_importfbx", text="Import FBX")
+        row = box.row()
+        row.operator("xnd.reimport_file", text="Reimport File")
+
+        # Exporter
+        box = layout.box()
+        row = box.row()
+        row.label(text="File Exporter")
+        row = box.row()
+        wm = context.window_manager
+        row = box.row()
+        row.prop(wm, "file_dir")
+        row = box.row()
+        row.operator("xnd.pipeline_exportfbx", text="Export FBX")
+        row = box.row()
+        row.operator("xnd.pipeline_inst2csv", text="Instance to CSV")
+
+        
+
+
+# ImportHelper is a helper class, defines filename and
+# invoke() function which calls the file selector.
+from bpy_extras.io_utils import ImportHelper
+from bpy.props import StringProperty, BoolProperty, EnumProperty,FloatProperty
+from bpy.types import Operator
+
+    
+'''
+ ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄   ▄       ▄ 
+▐░░░░░░░░░░░▌▐░░░░░░░░░░▌ ▐░▌     ▐░▌
+▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌ ▐░▌   ▐░▌ 
+▐░▌          ▐░▌       ▐░▌  ▐░▌ ▐░▌  
+▐░█▄▄▄▄▄▄▄▄▄ ▐░█▄▄▄▄▄▄▄█░▌   ▐░▐░▌   
+▐░░░░░░░░░░░▌▐░░░░░░░░░░▌     ▐░▌    
+▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀█░▌   ▐░▌░▌   
+▐░▌          ▐░▌       ▐░▌  ▐░▌ ▐░▌  
+▐░▌          ▐░█▄▄▄▄▄▄▄█░▌ ▐░▌   ▐░▌ 
+▐░▌          ▐░░░░░░░░░░▌ ▐░▌     ▐░▌
+ ▀            ▀▀▀▀▀▀▀▀▀▀   ▀       ▀ 
+                                                                                                                                                                                                                     
 '''
 
 class ImportFBX(Operator, ImportHelper):
@@ -79,17 +109,9 @@ class ImportFBX(Operator, ImportHelper):
 
     def execute(self, context):
         # 导入fbx文件
-        path = export_path = bpy.path.abspath(self.filepath)
-        newimport(filepath=path,use_custom_normals=self.use_custom_normals,global_scale=self.global_scale,colors_type=self.colors_type)
-        # bpy.ops.import_scene.fbx(filepath=path,use_custom_normals=self.use_custom_normals,global_scale=self.global_scale,colors_type=self.colors_type)
-
-        # # Add attribute
-        # objects = bpy.context.selected_objects
-        # for obj in objects:
-        #     # 获取导入文件的路径
-        #     file_path = os.path.abspath(path)
-        #     # 添加自定义属性 "filepath"
-        #     obj["filepath"] = file_path
+        path =  export_path = bpy.path.abspath(self.filepath)
+        newimport(file_path=path,use_custom_normals=self.use_custom_normals,global_scale=self.global_scale,colors_type=self.colors_type)
+        
         return {'FINISHED'}
         
 class ReimportFile(bpy.types.Operator):
@@ -105,21 +127,7 @@ class ReimportFile(bpy.types.Operator):
         return {'FINISHED'}
     
 
-    
-'''
- ▄▄▄▄▄▄▄▄▄▄▄       ▄▄       ▄▄       ▄▄▄▄▄▄▄▄▄▄▄       ▄▄▄▄▄▄▄▄▄▄▄       ▄▄▄▄▄▄▄▄▄▄▄       ▄▄▄▄▄▄▄▄▄▄▄ 
-▐░░░░░░░░░░░▌     ▐░░▌     ▐░░▌     ▐░░░░░░░░░░░▌     ▐░░░░░░░░░░░▌     ▐░░░░░░░░░░░▌     ▐░░░░░░░░░░░▌
- ▀▀▀▀█░█▀▀▀▀      ▐░▌░▌   ▐░▐░▌     ▐░█▀▀▀▀▀▀▀█░▌     ▐░█▀▀▀▀▀▀▀█░▌     ▐░█▀▀▀▀▀▀▀█░▌      ▀▀▀▀█░█▀▀▀▀ 
-     ▐░▌          ▐░▌▐░▌ ▐░▌▐░▌     ▐░▌       ▐░▌     ▐░▌       ▐░▌     ▐░▌       ▐░▌          ▐░▌     
-     ▐░▌          ▐░▌ ▐░▐░▌ ▐░▌     ▐░█▄▄▄▄▄▄▄█░▌     ▐░▌       ▐░▌     ▐░█▄▄▄▄▄▄▄█░▌          ▐░▌     
-     ▐░▌          ▐░▌  ▐░▌  ▐░▌     ▐░░░░░░░░░░░▌     ▐░▌       ▐░▌     ▐░░░░░░░░░░░▌          ▐░▌     
-     ▐░▌          ▐░▌   ▀   ▐░▌     ▐░█▀▀▀▀▀▀▀▀▀      ▐░▌       ▐░▌     ▐░█▀▀▀▀█░█▀▀           ▐░▌     
-     ▐░▌          ▐░▌       ▐░▌     ▐░▌               ▐░▌       ▐░▌     ▐░▌     ▐░▌            ▐░▌     
- ▄▄▄▄█░█▄▄▄▄      ▐░▌       ▐░▌     ▐░▌               ▐░█▄▄▄▄▄▄▄█░▌     ▐░▌      ▐░▌           ▐░▌     
-▐░░░░░░░░░░░▌     ▐░▌       ▐░▌     ▐░▌               ▐░░░░░░░░░░░▌     ▐░▌       ▐░▌          ▐░▌     
- ▀▀▀▀▀▀▀▀▀▀▀       ▀         ▀       ▀                 ▀▀▀▀▀▀▀▀▀▀▀       ▀         ▀            ▀      
-                                                                                                                                                                                  
-'''
+
 
 
 
@@ -188,8 +196,166 @@ def refresh_ref(filepath):
 
 
 
+  
+class ExportFBX(bpy.types.Operator):
+    bl_idname = "xnd.pipeline_exportfbx"
+    bl_label = "Export FBX"
+
+    def execute(self, context):
+        # 获取当前场景和选中的物体列表
+        scene = bpy.context.scene
+        selected_objects = bpy.context.selected_objects
+
+        wm = context.window_manager
+        directory = wm.file_dir
+
+        # 指定导出路径
+        # export_path = "D:/XndLib/tools/blender_plugin/xndlib"
+        export_path = bpy.path.abspath(directory)
+
+        # 创建导出路径目录（如果不存在）
+        if not os.path.exists(export_path):
+            os.makedirs(export_path)
+
+        # 遍历选中的物体列表
+        for obj in selected_objects:
+            # 选择当前物体并导出为 FBX 文件
+            bpy.ops.object.select_all(action='DESELECT')
+            obj.select_set(True)
+            export_file = export_path + obj.name + ".fbx"
+            bpy.ops.export_scene.fbx(filepath=export_file, use_selection=True)
+            
+
+        # 重新选择所有物体
+        bpy.ops.object.select_all(action='DESELECT')
+        for obj in selected_objects:
+            obj.select_set(True)
+
+        # 输出导出成功信息
+        print("Exported selected objects to:", export_path)
+        return {'FINISHED'}
+    
+
+'''
+ ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄               ▄ 
+▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌▐░▌             ▐░▌
+▐░█▀▀▀▀▀▀▀▀▀ ▐░█▀▀▀▀▀▀▀▀▀  ▐░▌           ▐░▌ 
+▐░▌          ▐░▌            ▐░▌         ▐░▌  
+▐░▌          ▐░█▄▄▄▄▄▄▄▄▄    ▐░▌       ▐░▌   
+▐░▌          ▐░░░░░░░░░░░▌    ▐░▌     ▐░▌    
+▐░▌           ▀▀▀▀▀▀▀▀▀█░▌     ▐░▌   ▐░▌     
+▐░▌                    ▐░▌      ▐░▌ ▐░▌      
+▐░█▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄█░▌       ▐░▐░▌       
+▐░░░░░░░░░░░▌▐░░░░░░░░░░░▌        ▐░▌        
+ ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀▀          ▀         
+'''                          
+
+import csv
+from mathutils import Matrix
+
+class InstanceToCSV(bpy.types.Operator):
+    bl_idname = "xnd.pipeline_inst2csv"
+    bl_label = "Instance to CSV"
+
+    def execute(self, context):
+
+        # 获取当前选中的物体
+        obj = context.object
+        
+
+        # 指定 CSV 文件路径
+        wm = context.window_manager
+        directory = wm.file_dir
+
+        # 指定导出路径
+        # export_path = "D:/XndLib/tools/blender_plugin/xndlib"
+        export_path = bpy.path.abspath(directory)
+
+        # 创建导出路径目录（如果不存在）
+        if not os.path.exists(export_path):
+            os.makedirs(export_path)
+        csv_file_path = export_path + obj.name + ".csv"
+
+        # 打开 CSV 文件，并创建 CSV 写入器
+        with open(csv_file_path, mode='w', newline='') as csv_file:
+            writer = csv.writer(csv_file)
+            header = ["---", "SMesh","Transform"]  # 表头
+            rows = []    # 数据行
+
+            depsgraph = bpy.context.evaluated_depsgraph_get()
+            # 获取选中的物体
+            selected_objects = bpy.context.selected_objects
+
+            # 遍历选中的物体
+            for obj in selected_objects:
+                eval = obj.evaluated_get(depsgraph)
+                
+                for inst in depsgraph.object_instances:
+                    if inst.parent == eval:
+                        if not inst.is_instance:
+                            pass
+                        # from .preset.datatable import unreal_physmesh
+                        
+                        # # print(inst.object.name)
+                        # # print(inst.matrix_world.to_translation(), inst.matrix_world.to_euler())
+                        
+                        name = inst.object.name
+                        sourceobj = bpy.data.objects.get(name)
+                        
+                        if "Path" in sourceobj.keys():
+                            # 获取自定义属性 "Path" 的值
+                            path = sourceobj["Path"]
+                            
+                        else:
+                            print("对象 '{}' 没有自定义属性 'Path'。".format(name))
+                            path = "--"
+                    
+                        
+                        
+                        #获取矩阵变换数据
+                        matrix = inst.matrix_world
+                        translation, rotation, scale = matrix.decompose()
+                        transform = f"Rotation=(X={rotation.x}, Y={rotation.y}, Z={rotation.z}, W={rotation.w}),Translation=(X={translation.x},Y={translation.y},Z={translation.z}),Scale3D=(X={scale.x},Y={scale.y},Z={scale.z})"
+                        
+                        
+
+                        # rows.append([name,translation, rotation, scale])
+                        rows.append([name,path,transform])
 
 
+
+           
+    
+            # write csv -----------------------------------------------
+            # 写入 CSV 文件的表头
+            writer.writerow(header)
+            
+            # 写入 CSV 文件
+            for row in rows:
+                writer.writerow(row)
+
+
+        # 输出提示信息
+        print(f"CSV 文件已保存到：{csv_file_path}")
+        return {'FINISHED'}
+
+
+
+'''
+ ▄▄▄▄▄▄▄▄▄▄▄       ▄▄        ▄       ▄▄▄▄▄▄▄▄▄▄  
+▐░░░░░░░░░░░▌     ▐░░▌      ▐░▌     ▐░░░░░░░░░░▌ 
+▐░█▀▀▀▀▀▀▀▀▀      ▐░▌░▌     ▐░▌     ▐░█▀▀▀▀▀▀▀█░▌
+▐░▌               ▐░▌▐░▌    ▐░▌     ▐░▌       ▐░▌
+▐░█▄▄▄▄▄▄▄▄▄      ▐░▌ ▐░▌   ▐░▌     ▐░▌       ▐░▌
+▐░░░░░░░░░░░▌     ▐░▌  ▐░▌  ▐░▌     ▐░▌       ▐░▌
+▐░█▀▀▀▀▀▀▀▀▀      ▐░▌   ▐░▌ ▐░▌     ▐░▌       ▐░▌
+▐░▌               ▐░▌    ▐░▌▐░▌     ▐░▌       ▐░▌
+▐░█▄▄▄▄▄▄▄▄▄      ▐░▌     ▐░▐░▌     ▐░█▄▄▄▄▄▄▄█░▌
+▐░░░░░░░░░░░▌     ▐░▌      ▐░░▌     ▐░░░░░░░░░░▌ 
+ ▀▀▀▀▀▀▀▀▀▀▀       ▀        ▀▀       ▀▀▀▀▀▀▀▀▀▀  
+                                                 
+
+'''  
 
 
 
@@ -198,21 +364,59 @@ def refresh_ref(filepath):
 def menu_func_import(self, context):
     self.layout.operator(ImportFBX.bl_idname, text="FBX Import - XndLib")
 
+def menu_func_export(self, context):
+    self.layout.operator(InstanceToCSV.bl_idname, text="Instance to CSV - XndLib")
+
+
 
 # Register and add to the "file selector" menu (required to use F3 search "Text Import Operator" for quick access).
 def register():
+    
+
+    from bpy.types import WindowManager
+    from bpy.props import (
+        StringProperty
+    )
+
+    WindowManager.file_dir = StringProperty(
+        name="Folder Path",
+        subtype='DIR_PATH',
+        default="//"
+    )
+
+    bpy.types.Scene.cache_enum = bpy.props.EnumProperty(
+        name="cache_enum",
+        items=[('enum_FBX', "fbx", ""),
+            ('enum_OBJ', "obj", ""),
+            ('enum_CSV', "csv", "")],
+        default='enum_FBX'
+    )
+
+    
+    bpy.utils.register_class(ExportFBX)
+    bpy.utils.register_class(InstanceToCSV)
     bpy.utils.register_class(ImportFBX)
     bpy.utils.register_class(ReimportFile)
-    # bpy.utils.register_class(File_IO)
     bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
+    bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
+    
     
 
 def unregister():
-    
-    # bpy.utils.unregister_class(File_IO)
+
+    del bpy.types.Scene.cache_enum
+    bpy.utils.unregister_class(ExportFBX)
+    bpy.utils.unregister_class(InstanceToCSV)
     bpy.utils.unregister_class(ImportFBX)
     bpy.utils.unregister_class(ReimportFile)
     bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
+    bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
+
+
+
+
+
+
 
 
 # if __name__ == "__main__":

@@ -4,7 +4,7 @@ REM 将A路径下的所有文件复制到B路径下，相对路径直接写set s
 
 setlocal
 
-set source_path=%cd%
+set source_path=%~dp0xndlib
 set destination_path=D:\Applications\Blender Foundation\blender-3.6.1\3.6\scripts\addons\xndlib
 
 
