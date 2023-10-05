@@ -41,6 +41,8 @@ def panel_draw(self, context):
         row = box.row()
         row.operator("xnd.pipeline_exportfbx", text="Export FBX")
         row = box.row()
+        row.operator("xnd.pipeline_exportobj", text="Export OBJ")
+        row = box.row()
         row.operator("xnd.pipeline_inst2csv", text="Instance to CSV")
 
         
@@ -234,7 +236,99 @@ class ExportFBX(bpy.types.Operator):
         # 输出导出成功信息
         print("Exported selected objects to:", export_path)
         return {'FINISHED'}
-    
+
+'''
+ ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄   ▄▄▄▄▄▄▄▄▄▄▄ 
+▐░░░░░░░░░░░▌▐░░░░░░░░░░▌ ▐░░░░░░░░░░░▌
+▐░█▀▀▀▀▀▀▀█░▌▐░█▀▀▀▀▀▀▀█░▌ ▀▀▀▀▀█░█▀▀▀ 
+▐░▌       ▐░▌▐░▌       ▐░▌      ▐░▌    
+▐░▌       ▐░▌▐░█▄▄▄▄▄▄▄█░▌      ▐░▌    
+▐░▌       ▐░▌▐░░░░░░░░░░▌       ▐░▌    
+▐░▌       ▐░▌▐░█▀▀▀▀▀▀▀█░▌      ▐░▌    
+▐░▌       ▐░▌▐░▌       ▐░▌      ▐░▌    
+▐░█▄▄▄▄▄▄▄█░▌▐░█▄▄▄▄▄▄▄█░▌ ▄▄▄▄▄█░▌    
+▐░░░░░░░░░░░▌▐░░░░░░░░░░▌ ▐░░░░░░░▌    
+ ▀▀▀▀▀▀▀▀▀▀▀  ▀▀▀▀▀▀▀▀▀▀   ▀▀▀▀▀▀▀     
+                                       
+'''    
+ 
+class ExportOBJ(bpy.types.Operator):
+    bl_idname = "xnd.pipeline_exportobj"
+    bl_label = "Export OBJ"
+
+    def execute(self, context):
+        # 获取当前场景和选中的物体列表
+        scene = bpy.context.scene
+        selected_objects = bpy.context.selected_objects
+
+        wm = context.window_manager
+        directory = wm.file_dir
+
+        # 指定导出路径
+        # export_path = "D:/XndLib/tools/blender_plugin/xndlib"
+        export_path = bpy.path.abspath(directory)
+
+        # 创建导出路径目录（如果不存在）
+        if not os.path.exists(export_path):
+            os.makedirs(export_path)
+
+        # 遍历选中的物体列表
+        for obj in selected_objects:
+            # 选择当前物体并导出为 OBJ 文件
+            bpy.ops.object.select_all(action='DESELECT')
+            obj.select_set(True)
+            export_file = export_path + obj.name + ".obj"
+            bpy.ops.export_scene.obj(filepath=export_file, use_selection=True)
+            
+
+        # 重新选择所有物体
+        bpy.ops.object.select_all(action='DESELECT')
+        for obj in selected_objects:
+            obj.select_set(True)
+
+        # 输出导出成功信息
+        print("Exported selected objects to:", export_path)
+        return {'FINISHED'}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 '''
  ▄▄▄▄▄▄▄▄▄▄▄  ▄▄▄▄▄▄▄▄▄▄▄  ▄               ▄ 
@@ -394,6 +488,7 @@ def register():
 
     
     bpy.utils.register_class(ExportFBX)
+    bpy.utils.register_class(ExportOBJ)
     bpy.utils.register_class(InstanceToCSV)
     bpy.utils.register_class(ImportFBX)
     bpy.utils.register_class(ReimportFile)
@@ -406,6 +501,7 @@ def unregister():
 
     del bpy.types.Scene.cache_enum
     bpy.utils.unregister_class(ExportFBX)
+    bpy.utils.unregister_class(ExportOBJ)
     bpy.utils.unregister_class(InstanceToCSV)
     bpy.utils.unregister_class(ImportFBX)
     bpy.utils.unregister_class(ReimportFile)
