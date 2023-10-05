@@ -1,5 +1,6 @@
 import bpy
 import random
+import os
 
 
 
@@ -18,6 +19,8 @@ class Material_Panel(bpy.types.Panel):
         row = box.row()
         row.label(text="Material")
         row = box.row()
+        row.operator("xnd.texmakerpreset", text="TextureMaker Preset")
+        row = box.row()
         row.operator("xnd.randmatcol", text="Random Material Color")
 
 
@@ -29,7 +32,7 @@ class RandMatCol(bpy.types.Operator):
     bl_idname = "xnd.randmatcol"
     bl_label = "Random material color"
     bl_description = (
-        "Move objs to same name collection"
+        ""
     )
 
     def execute(self, context):
@@ -50,19 +53,34 @@ class RandMatCol(bpy.types.Operator):
         return {'FINISHED'}
     
 
-# def outlinedraw(self, context):
-#         layout = self.layout
-#         row = layout.row()
-#         row.label(text="XndLib")
-#         row = layout.row()
-#         row.separator()
-#         row = layout.row()
-#         row.operator("xnd.randmatcol", text="Random ID Color")
-#         # .arg = 'Move objs to same name collection'
+class TexMakerPreset(bpy.types.Operator):
+    bl_idname = "xnd.texmakerpreset"
+    bl_label = "TextureMaker Preset"
+    bl_description = (
+        "Add a base textureMaker set "
+    )
+
+    def execute(self, context):
+   
+        # 获取当前文件所在目录
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+
+        # 拼接目标文件的路径
+        preset_folder = os.path.join(current_dir, "preset")
+        preset_file = os.path.join(preset_folder, "texturemaker/TextureMaker.py")
+
+        # 执行指定路径下的Python文件
+        with open(preset_file, 'r') as file:
+            code = file.read()
+            exec(code)
+        
+
+        return {'FINISHED'}
 
 
 def register():
     bpy.utils.register_class(RandMatCol)
+    bpy.utils.register_class(TexMakerPreset)
     bpy.utils.register_class(Material_Panel)
 
     # bpy.types.MATERIAL_UL_matslots.append(outlinedraw)
@@ -71,4 +89,5 @@ def register():
 
 def unregister():
     bpy.utils.unregister_class(RandMatCol)
+    bpy.utils.unregister_class(TexMakerPreset)
     bpy.utils.unregister_class(Material_Panel)
